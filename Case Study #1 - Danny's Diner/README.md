@@ -90,6 +90,7 @@ ORDER BY 1;
 
 
 **4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
+**Most purchased item**
 ```sql
 SELECT
 m.product_name,
@@ -104,11 +105,11 @@ ORDER BY 2 DESC
 
 LIMIT 1;
 ```
-**Most purchased item**
 | product_name | count |
 | ------------ | ----- |
 | ramen        | 8     |
 
+**How many times purchased by all customers**
 ```sql
 SELECT
 s.customer_id,
@@ -124,7 +125,6 @@ WHERE m.product_name = 'ramen'
 GROUP BY 1,2
 ORDER BY 3 DESC;
 ```
-**How many times purchased by all customers**
 | customer_id | product_name | count |
 | ----------- | ------------ | ----- |
 | A           | ramen        | 3     |
@@ -133,6 +133,36 @@ ORDER BY 3 DESC;
 
 
 **5. Which item was the most popular for each customer?**
+```sql
+WITH ranking AS(
+SELECT
+s.customer_id,
+m.product_name,
+COUNT(s.product_id) AS order_count,
+RANK() OVER (PARTITION BY s.customer_id ORDER BY COUNT(s.product_id) DESC) AS order_rank
+
+FROM dannys_diner.sales AS s
+LEFT JOIN dannys_diner.menu AS m ON
+s.product_id = m.product_id
+
+GROUP BY 1,2)
+
+SELECT
+customer_id,
+product_name,
+order_count
+
+FROM ranking
+WHERE order_rank = 1;
+```
+
+| customer_id | product_name | order_count |
+| ----------- | ------------ | ----------- |
+| A           | ramen        | 3           |
+| B           | ramen        | 2           |
+| B           | curry        | 2           |
+| B           | sushi        | 2           |
+| C           | ramen        | 3           |
 
 **6. Which item was purchased first by the customer after they became a member?**
 
