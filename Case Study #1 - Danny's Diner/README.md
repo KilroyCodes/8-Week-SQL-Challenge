@@ -17,7 +17,7 @@ Questions provided by Data with Danny. Solutions provided by me :grin:
 ```sql
 SELECT
 s.customer_id,
-sum(m.price)
+sum(m.price) as total_spent
 
 FROM dannys_diner.sales AS s
 LEFT JOIN dannys_diner.menu AS m ON
@@ -26,15 +26,32 @@ s.product_id = m.product_id
 GROUP BY 1;
 ```
 
-| customer_id | sum |
-| ----------- | --- |
-| B           | 74  |
-| C           | 36  |
-| A           | 76  |
+| customer_id | total_spent |
+| ----------- | ----------- |
+| B           | 74          |
+| C           | 36          |
+| A           | 76          |
 
 
-2. How many days has each customer visited the restaurant?
-3. What was the first item from the menu purchased by each customer?
+**2. How many days has each customer visited the restaurant?**
+```sql
+    SELECT
+    customer_id,
+    COUNT(DISTINCT order_date) as days_visited
+    
+    FROM dannys_diner.sales
+    GROUP BY customer_id;
+```
+
+| customer_id | days_visited |
+| ----------- | ------------ |
+| A           | 4            |
+| B           | 6            |
+| C           | 2            |
+
+
+**3. What was the first item from the menu purchased by each customer?**
+
 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 5. Which item was the most popular for each customer?
 6. Which item was purchased first by the customer after they became a member?
