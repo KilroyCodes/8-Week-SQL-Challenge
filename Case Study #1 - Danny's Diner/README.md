@@ -51,9 +51,39 @@ GROUP BY 1;
 
 
 **3. What was the first item from the menu purchased by each customer?**
+```sql
+s.product_id = m.product_id
 
-4. What is the most purchased item on the menu and how many times was it purchased by all customers?
-5. Which item was the most popular for each customer?
+GROUP BY 1)
+
+SELECT
+first_orders.customer_id,
+m.product_name
+
+FROM first_orders
+LEFT JOIN dannys_diner.sales AS s ON
+s.customer_id = first_orders.customer_id AND
+s.order_date = first_orders.first_date
+
+LEFT JOIN dannys_diner.menu AS m ON
+s.product_id = m.product_id
+
+GROUP BY 1,2
+ORDER BY 1;
+```
+
+| customer_id | product_name |
+| ----------- | ------------ |
+| A           | curry        |
+| A           | sushi        |
+| B           | curry        |
+| C           | ramen        |
+
+
+**4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
+
+**5. Which item was the most popular for each customer?**
+
 6. Which item was purchased first by the customer after they became a member?
 7. Which item was purchased just before the customer became a member?
 8. What is the total items and amount spent for each member before they became a member?
