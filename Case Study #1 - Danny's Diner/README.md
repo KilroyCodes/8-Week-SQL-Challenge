@@ -9,7 +9,7 @@ He has collected data on his menu, customer orders, and existing members of his 
 ## Relational Datasets ##
 There are three datasets to work with: sales, menu, and members.
 
-![Danny's Diner](https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/main/Danny's%20Diner%20relational%20databases.png)
+![Danny's Diner](Case Study #1 - Danny's Diner/Danny's Diner relational databases.png)
 
 ## Case Study Questions & Solutions ##
 Questions provided by Data with Danny. Solutions provided by me :grin:
