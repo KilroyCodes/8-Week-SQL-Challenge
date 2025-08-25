@@ -33,6 +33,7 @@ GROUP BY 1;
 | A           | 76          |
 
 
+
 **2. How many days has each customer visited the restaurant?**
 ```sql
 SELECT
@@ -48,6 +49,7 @@ GROUP BY customer_id;
 | A           | 4            |
 | B           | 6            |
 | C           | 2            |
+
 
 
 **3. What was the first item from the menu purchased by each customer?**
@@ -89,6 +91,7 @@ ORDER BY 1;
 | C           | ramen        |
 
 
+
 **4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
 **Most purchased item**
 ```sql
@@ -108,6 +111,8 @@ LIMIT 1;
 | product_name | count |
 | ------------ | ----- |
 | ramen        | 8     |
+
+
 
 **How many times purchased by all customers**
 ```sql
@@ -130,6 +135,7 @@ ORDER BY 3 DESC;
 | A           | ramen        | 3     |
 | C           | ramen        | 3     |
 | B           | ramen        | 2     |
+
 
 
 **5. Which item was the most popular for each customer?**
@@ -163,6 +169,8 @@ WHERE order_rank = 1;
 | B           | curry        | 2           |
 | B           | sushi        | 2           |
 | C           | ramen        | 3           |
+
+
 
 **6. Which item was purchased first by the customer after they became a member?**
 ```sql
@@ -203,6 +211,8 @@ WHERE f.order_rank = 1;
 
 Customer C is not an active member
 
+
+
 **7. Which item was purchased just before the customer became a member?**
 ```sql
 WITH last_orders AS(
@@ -240,6 +250,8 @@ WHERE f.order_rank = 1;
 | A           | 2021-01-07 | 2021-01-01 | curry        |
 | B           | 2021-01-09 | 2021-01-01 | curry        |
 
+
+
 **8. What is the total items and amount spent for each member before they became a member?**
 ```sql
 WITH last_orders AS(
@@ -274,6 +286,8 @@ GROUP BY 1;
 | ----------- | ------------- | ----------- |
 | A           | 2             | 25          |
 | B           | 2             | 40          |
+
+
 
 **9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
 
@@ -310,8 +324,10 @@ ORDER BY 1;
 | C           | 360 |
 
 **10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
+
 From Day 0 (join date) to Day 6 (for a 7 day total), customers earn 20 points per $1 spent regardless of item purchased.
 From Day 7 onwards, customers earn points at regular rates i.e., 20 for sushi, 10 for all else
+
 ```sql
 WITH points_per_order AS (
 SELECT
@@ -321,7 +337,7 @@ s.order_date,
 m.product_name,
 (mem.join_date - s.order_date),
 CASE 
-WHEN (mem.join_date - s.order_date) BETWEEN -7 AND 0 THEN SUM(m.price)*20
+WHEN (mem.join_date - s.order_date) BETWEEN -6 AND 0 THEN SUM(m.price)*20
 WHEN m.product_name = 'sushi' THEN SUM(m.price)*20
 ELSE SUM(m.price)*10
 END AS points
@@ -351,5 +367,5 @@ GROUP BY 1;
 
 | customer_id | total_points |
 | ----------- | ------------ |
-| B           | 440          |
+| B           | 320          |
 | A           | 1020         |
