@@ -165,6 +165,43 @@ WHERE order_rank = 1;
 | C           | ramen        | 3           |
 
 **6. Which item was purchased first by the customer after they became a member?**
+```sql
+WITH first_orders AS(
+SELECT
+m.customer_id,
+m.join_date,
+s.order_date,
+s.product_id,
+RANK() OVER (PARTITION BY m.customer_id ORDER BY s.order_date ASC) AS order_rank
+FROM members AS m
+
+LEFT JOIN sales AS s ON
+s.customer_id = m.customer_id
+
+WHERE s.order_date > m.join_date
+
+ORDER BY 3 ASC)
+
+SELECT
+f.customer_id,
+f.join_date,
+f.order_date,
+m.product_name
+
+FROM first_orders AS f
+
+LEFT JOIN menu as m ON
+f.product_id = m.product_id
+
+WHERE f.order_rank = 1;
+```
+
+
+| customer_id | join_date  | order_date | product_name |
+| ----------- | ---------- | ---------- | ------------ |
+| A           | 2021-01-07 | 2021-01-10 | ramen        |
+| B           | 2021-01-09 | 2021-01-11 | sushi        |
+
 
 **7. Which item was purchased just before the customer became a member?**
 
