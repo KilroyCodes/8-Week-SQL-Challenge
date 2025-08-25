@@ -326,6 +326,7 @@ ORDER BY 1;
 **10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
 
 From Day 0 (join date) to Day 6 (for a 7 day total), customers earn 20 points per $1 spent regardless of item purchased.
+
 From Day 7 onwards, customers earn points at regular rates i.e., 20 for sushi, 10 for all else
 
 ```sql
