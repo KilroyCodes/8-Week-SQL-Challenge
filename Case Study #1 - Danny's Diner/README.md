@@ -276,7 +276,7 @@ GROUP BY 1;
 | B           | 2             | 40          |
 
 **9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
-(Assuming that this question means to determine potential points earned per customer regardless of membership status. Points will be calculated based on entire customer order history)
+\n (Assuming that this question means to determine potential points earned per customer regardless of membership status. Points will be calculated based on entire customer order history)
 ```sql
 WITH points AS(
 SELECT
