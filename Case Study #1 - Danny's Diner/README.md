@@ -3,7 +3,8 @@ Challenge link: [Danny's Diner](https://8weeksqlchallenge.com/case-study-1/)
 
 ## Background ##
 Danny has opened up a new diner selling three food items: sushi, curry, and ramen.
-He has collected data on his menu, customer orders, and existing members of his loyalty program.
+
+He has collected data on his menu, customer orders, and existing members of his loyalty program. He wants to explore this data to better understand where his customers are spending, and how the loyalty program is performing.
 
 ## Relational Datasets ##
 There are three datasets to work with: sales, menu, and members.
