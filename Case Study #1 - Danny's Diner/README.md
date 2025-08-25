@@ -276,7 +276,9 @@ GROUP BY 1;
 | B           | 2             | 40          |
 
 **9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
-\(Assuming that this question means to determine potential points earned per customer regardless of membership status. Points will be calculated based on entire customer order history)
+
+
+(Assuming that this question means to determine potential points earned per customer regardless of membership status. Points will be calculated based on entire customer order history)
 ```sql
 WITH points AS(
 SELECT
@@ -308,8 +310,8 @@ ORDER BY 1;
 | C           | 360 |
 
 **10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
-\From Day 0 (join date) to Day 6 (for a 7 day total), customers earn 20 points per $1 spent regardless of item purchased.
-\From Day 7 onwards, customers earn points at regular rates i.e., 20 for sushi, 10 for all else
+From Day 0 (join date) to Day 6 (for a 7 day total), customers earn 20 points per $1 spent regardless of item purchased.
+From Day 7 onwards, customers earn points at regular rates i.e., 20 for sushi, 10 for all else
 ```sql
 WITH points_per_order AS (
 SELECT
