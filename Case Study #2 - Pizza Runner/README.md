@@ -7,10 +7,43 @@ lorem ipsum
 ## Relational Datasets ##
 There are six datasets to work with: runner_orders, runners, customer_orders, pizza_names, pizza_recipes, and pizza_toppings.
 
-![Pizza Runner][(https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Danny's%20Diner%20relational%20databases.png)](https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/Pizza%20Runner%20relational%20datasets.png)
+![Pizza Runner](https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Danny's%20Diner%20relational%20databases.png)
 
 ## Case Study Questions & Solutions ##
 Questions provided by Data with Danny. Solutions provided by me :grin:
+
+Before we begin answering questions, we must clean our datasets.
+We encounter null values in both the **runner_orders** and **customer_orders** tables, and additionally inconsistent data entry for distance and duration in **runner_orders**.
+
+**customer_orders**
+| order_id | customer_id | pizza_id | exclusions | extras | order_time          |
+| -------- | ----------- | -------- | ---------- | ------ | ------------------- |
+| 1        | 101         | 1        |            |        | 2020-01-01 18:05:02 |
+| 2        | 101         | 1        |            |        | 2020-01-01 19:00:52 |
+| 3        | 102         | 1        |            |        | 2020-01-02 23:51:23 |
+| 3        | 102         | 2        |            |        | 2020-01-02 23:51:23 |
+| 4        | 103         | 1        | 4          |        | 2020-01-04 13:23:46 |
+| 4        | 103         | 1        | 4          |        | 2020-01-04 13:23:46 |
+| 4        | 103         | 2        | 4          |        | 2020-01-04 13:23:46 |
+| 5        | 104         | 1        | null       | 1      | 2020-01-08 21:00:29 |
+| 6        | 101         | 2        | null       | null   | 2020-01-08 21:03:13 |
+| 7        | 105         | 2        | null       | 1      | 2020-01-08 21:20:29 |
+
+**runner_orders**
+| order_id | runner_id | pickup_time         | distance | duration   | cancellation            |
+| -------- | --------- | ------------------- | -------- | ---------- | ----------------------- |
+| 1        | 1         | 2020-01-01 18:15:34 | 20km     | 32 minutes |                         |
+| 2        | 1         | 2020-01-01 19:10:54 | 20km     | 27 minutes |                         |
+| 3        | 1         | 2020-01-03 00:12:37 | 13.4km   | 20 mins    |                         |
+| 4        | 2         | 2020-01-04 13:53:03 | 23.4     | 40         |                         |
+| 5        | 3         | 2020-01-08 21:10:57 | 10       | 15         |                         |
+| 6        | 3         | null                | null     | null       | Restaurant Cancellation |
+| 7        | 2         | 2020-01-08 21:30:45 | 25km     | 25mins     | null                    |
+| 8        | 2         | 2020-01-10 00:15:02 | 23.4 km  | 15 minute  | null                    |
+| 9        | 2         | null                | null     | null       | Customer Cancellation   |
+| 10       | 1         | 2020-01-11 18:50:20 | 10km     | 10minutes  | null                    |
+
+
 
 ### A. Pizza Metrics ###
 1. How many pizzas were ordered?
