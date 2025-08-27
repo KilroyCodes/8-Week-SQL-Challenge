@@ -12,6 +12,7 @@ There are six datasets to work with: runner_orders, runners, customer_orders, pi
 ## Case Study Questions & Solutions ##
 Questions provided by Data with Danny. Solutions provided by me :grin:
 
+### Data Cleaning ###
 Before we begin answering questions, we must clean our datasets.
 We encounter null values in both the **runner_orders** and **customer_orders** tables, and additionally inconsistent data entry for distance and duration in **runner_orders**.
 
@@ -44,6 +45,55 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 | 10       | 1         | 2020-01-11 18:50:20 | 10km     | 10minutes  | null                    |
 
 
+To do this, we'll create new tables using the **WITH/AS** statements as below:
+
+```sql
+WITH runner_orders_clean AS (
+SELECT
+order_id,
+runner_id,
+
+CASE
+WHEN (pickup_time IS NULL OR pickup_time LIKE 'null') THEN ''
+ELSE pickup_time
+END AS pickup_time,
+
+CASE
+WHEN (duration IS NULL OR CAST(duration AS TEXT) LIKE 'null') THEN ''
+ELSE TRIM('minutes' FROM duration)
+END AS duration,
+
+CASE
+WHEN (distance IS NULL OR CAST(distance AS TEXT) LIKE 'null') THEN ''
+ELSE TRIM('kms' FROM distance)
+END AS distance,
+
+CASE
+WHEN (cancellation IS NULL OR cancellation LIKE 'null') THEN ''
+ELSE cancellation
+END AS cancellation
+
+FROM runner_orders)
+
+WITH customer_orders_clean AS (
+SELECT
+order_id,
+customer_id,
+pizza_id,
+
+CASE
+WHEN (exclusions IS NULL OR exclusions LIKE 'null') THEN ''
+ELSE exclusions
+END AS exclusions,
+
+CASE
+WHEN (extras IS NULL OR extras LIKE 'null') THEN ''
+ELSE extras
+END AS extras,
+
+order_time
+FROM customer_orders)
+```
 
 ### A. Pizza Metrics ###
 1. How many pizzas were ordered?
@@ -57,6 +107,7 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 9. What was the total volume of pizzas ordered for each hour of the day?
 10. What was the volume of orders for each day of the week?
 
+
 ### B. Runner and Customer Experience ###
 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
@@ -65,6 +116,7 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 5. What was the difference between the longest and shortest delivery times for all orders?
 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
 7. What is the successful delivery percentage for each runner?
+
 
 ### C. Ingredient Optimisation ###
 1. What are the standard ingredients for each pizza?
@@ -79,6 +131,7 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
 6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?
+
 
 ### D. Pricing and Ratings ###
 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?
