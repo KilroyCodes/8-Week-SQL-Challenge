@@ -45,10 +45,10 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 | 10       | 1         | 2020-01-11 18:50:20 | 10km     | 10minutes  | null                    |
 
 
-To do this, we'll create new tables using the **WITH/AS** statements as below:
+To do this, we'll create new tables using the **CREATE TEMP TABLE** command as below:
 
 ```sql
-WITH runner_orders_clean AS (
+CREATE TEMP TABLE runner_orders_clean AS (
 SELECT
 order_id,
 runner_id,
@@ -74,8 +74,9 @@ ELSE cancellation
 END AS cancellation
 
 FROM runner_orders)
-
-WITH customer_orders_clean AS (
+```
+```sql
+CREATE TEMP TABLE customer_orders_clean AS (
 SELECT
 order_id,
 customer_id,
@@ -96,16 +97,94 @@ FROM customer_orders)
 ```
 
 ### A. Pizza Metrics ###
-1. How many pizzas were ordered?
-2. How many unique customer orders were made?
-3. How many successful orders were delivered by each runner?
-4. How many of each type of pizza was delivered?
-5. How many Vegetarian and Meatlovers were ordered by each customer?
-6. What was the maximum number of pizzas delivered in a single order?
-7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
-8. How many pizzas were delivered that had both exclusions and extras?
-9. What was the total volume of pizzas ordered for each hour of the day?
-10. What was the volume of orders for each day of the week?
+**1. How many pizzas were ordered?**
+```sql
+SELECT
+COUNT(*) AS count_pizza_orders
+FROM customer_orders_clean;
+```
+| count_pizza_orders |
+| ------------------ |
+| 14                 |
+
+**2. How many unique customer orders were made?**
+```sql
+SELECT
+COUNT(DISTINCT order_id) AS count_unique_orders
+FROM customer_orders_clean;
+```
+
+| count_unique_orders |
+| ------------------- |
+| 10                  |
+
+**3. How many successful orders were delivered by each runner?**
+```sql
+SELECT
+runner_id,
+COUNT(DISTINCT order_id) AS completed_orders
+  
+FROM runner_orders_clean
+WHERE cancellation = ''
+
+GROUP BY 1
+ORDER BY 1
+;
+```
+| runner_id | completed_orders |
+| --------- | ---------------- |
+| 1         | 4                |
+| 2         | 3                |
+| 3         | 1                |
+
+**4. How many of each type of pizza was delivered?**
+```sql
+SELECT
+pizza_id,
+count(*) AS count_orders
+
+FROM customer_orders_clean
+
+GROUP BY 1
+ORDER BY 1;
+```
+| pizza_id | count_orders |
+| -------- | ------------ |
+| 1        | 10           |
+| 2        | 4            |
+
+**5. How many Vegetarian and Meatlovers were ordered by each customer?**
+```sql
+SELECT
+coc.customer_id,
+SUM(CASE WHEN p.pizza_name = 'Meatlovers' THEN 1 ELSE 0 END) AS Meatlovers,
+SUM(CASE WHEN p.pizza_name = 'Vegetarian' THEN 1 ELSE 0 END) AS Vegetarian
+
+FROM customer_orders_clean AS coc
+
+LEFT JOIN pizza_names AS p ON
+coc.pizza_id = p.pizza_id
+
+GROUP BY 1
+ORDER BY 1;
+```
+| customer_id | meatlovers | vegetarian |
+| ----------- | ---------- | ---------- |
+| 101         | 2          | 1          |
+| 102         | 2          | 1          |
+| 103         | 3          | 1          |
+| 104         | 3          | 0          |
+| 105         | 0          | 1          |
+
+**6. What was the maximum number of pizzas delivered in a single order?**
+
+**7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?**
+
+**8. How many pizzas were delivered that had both exclusions and extras?**
+
+**9. What was the total volume of pizzas ordered for each hour of the day?**
+
+**10. What was the volume of orders for each day of the week?**
 
 
 ### B. Runner and Customer Experience ###
