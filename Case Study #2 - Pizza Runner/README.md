@@ -229,6 +229,21 @@ GROUP BY 1;
 | 105         | 1                        | 0                           |
 
 **8. How many pizzas were delivered that had both exclusions and extras?**
+```sql
+SELECT
+SUM(CASE WHEN (coc.exclusions !='' AND coc.extras !='') THEN 1 ELSE 0 END) AS count_orders_with_both_changes
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE cancellation = '';
+```
+| count_orders_with_both_changes |
+| ------------------------------ |
+| 1                              |
+
+---
 
 **9. What was the total volume of pizzas ordered for each hour of the day?**
 
