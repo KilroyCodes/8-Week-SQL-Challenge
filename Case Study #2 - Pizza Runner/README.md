@@ -94,7 +94,7 @@ END AS extras,
 order_time
 FROM customer_orders)
 ```
-
+---
 ### A. Pizza Metrics ###
 **1. How many pizzas were ordered?**
 ```sql
@@ -106,6 +106,8 @@ FROM customer_orders_clean;
 | ------------------ |
 | 14                 |
 
+---
+
 **2. How many unique customer orders were made?**
 ```sql
 SELECT
@@ -116,6 +118,8 @@ FROM customer_orders_clean;
 | count_unique_orders |
 | ------------------- |
 | 10                  |
+
+---
 
 **3. How many successful orders were delivered by each runner?**
 ```sql
@@ -134,6 +138,8 @@ ORDER BY 1;
 | 1         | 4                |
 | 2         | 3                |
 | 3         | 1                |
+
+---
 
 **4. How many of each type of pizza was delivered?**
 ```sql
@@ -159,6 +165,8 @@ ORDER BY 1;
 | Meatlovers | 9            |
 | Vegetarian | 3            |
 
+---
+
 **5. How many Vegetarian and Meatlovers were ordered by each customer?**
 ```sql
 SELECT
@@ -181,6 +189,8 @@ ORDER BY 1;
 | 103         | 3          | 1          |
 | 104         | 3          | 0          |
 | 105         | 0          | 1          |
+
+---
 
 **6. What was the maximum number of pizzas delivered in a single order?**
 ```sql
@@ -205,6 +215,8 @@ FROM pizzas_per_order;
 | -------------------- |
 | 3                    |
 
+---
+
 **7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?**
 ```sql
 SELECT
@@ -227,6 +239,8 @@ GROUP BY 1;
 | 103         | 3                        | 0                           |
 | 104         | 2                        | 1                           |
 | 105         | 1                        | 0                           |
+
+---
 
 **8. How many pizzas were delivered that had both exclusions and extras?**
 ```sql
