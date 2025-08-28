@@ -44,13 +44,7 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 | 9        | 2         | null                | null     | null       | Customer Cancellation   |
 | 10       | 1         | 2020-01-11 18:50:20 | 10km     | 10minutes  | null                    |
 
-
-
-
 To do this, we'll create new tables using the **CREATE TEMP TABLE** command as below:
-
-
-
 
 ```sql
 CREATE TEMP TABLE runner_orders_clean AS (
@@ -133,8 +127,7 @@ FROM runner_orders_clean
 WHERE cancellation = ''
 
 GROUP BY 1
-ORDER BY 1
-;
+ORDER BY 1;
 ```
 | runner_id | completed_orders |
 | --------- | ---------------- |
@@ -145,18 +138,26 @@ ORDER BY 1
 **4. How many of each type of pizza was delivered?**
 ```sql
 SELECT
-pizza_id,
-count(*) AS count_orders
+pn.pizza_name,
+count(coc.order_id) AS count_orders
 
-FROM customer_orders_clean
+FROM customer_orders_clean AS coc
+
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+LEFT JOIN pizza_names AS pn ON
+pn.pizza_id = coc.pizza_id
+
+WHERE roc.cancellation = ''
 
 GROUP BY 1
 ORDER BY 1;
 ```
-| pizza_id | count_orders |
-| -------- | ------------ |
-| 1        | 10           |
-| 2        | 4            |
+| pizza_name | count_orders |
+| ---------- | ------------ |
+| Meatlovers | 9            |
+| Vegetarian | 3            |
 
 **5. How many Vegetarian and Meatlovers were ordered by each customer?**
 ```sql
@@ -182,8 +183,50 @@ ORDER BY 1;
 | 105         | 0          | 1          |
 
 **6. What was the maximum number of pizzas delivered in a single order?**
+```sql
+WITH pizzas_per_order AS
+(SELECT
+coc.order_id,
+COUNT(coc.pizza_id) AS count_pizzas_delivered
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE cancellation = ''
+
+GROUP BY 1)
+
+SELECT
+MAX(count_pizzas_delivered) AS max_pizzas_delivered
+FROM pizzas_per_order;
+```
+| max_pizzas_delivered |
+| -------------------- |
+| 3                    |
 
 **7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?**
+```sql
+SELECT
+coc.customer_id,
+SUM(CASE WHEN (coc.exclusions !='' OR coc.extras !='') THEN 1 ELSE 0 END) AS count_orders_with_change,
+SUM(CASE WHEN (coc.exclusions ='' AND coc.extras ='') THEN 1 ELSE 0 END) AS count_orders_without_change
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE cancellation = ''
+
+GROUP BY 1;
+```
+| customer_id | count_orders_with_change | count_orders_without_change |
+| ----------- | ------------------------ | --------------------------- |
+| 101         | 0                        | 2                           |
+| 102         | 0                        | 3                           |
+| 103         | 3                        | 0                           |
+| 104         | 2                        | 1                           |
+| 105         | 1                        | 0                           |
 
 **8. How many pizzas were delivered that had both exclusions and extras?**
 
