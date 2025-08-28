@@ -29,7 +29,7 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 | 5        | 104         | 1        | null       | 1      | 2020-01-08 21:00:29 |
 | 6        | 101         | 2        | null       | null   | 2020-01-08 21:03:13 |
 | 7        | 105         | 2        | null       | 1      | 2020-01-08 21:20:29 |
-
+<br/>
 **runner_orders**
 | order_id | runner_id | pickup_time         | distance | duration   | cancellation            |
 | -------- | --------- | ------------------- | -------- | ---------- | ----------------------- |
@@ -44,8 +44,9 @@ We encounter null values in both the **runner_orders** and **customer_orders** t
 | 9        | 2         | null                | null     | null       | Customer Cancellation   |
 | 10       | 1         | 2020-01-11 18:50:20 | 10km     | 10minutes  | null                    |
 
+<br/>
 To do this, we'll create new tables using the **CREATE TEMP TABLE** command as below:
-
+<br/>
 ```sql
 CREATE TEMP TABLE runner_orders_clean AS (
 SELECT
