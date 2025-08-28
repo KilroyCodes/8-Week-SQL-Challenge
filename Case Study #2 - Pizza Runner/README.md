@@ -260,9 +260,46 @@ WHERE cancellation = '';
 ---
 
 **9. What was the total volume of pizzas ordered for each hour of the day?**
+```sql
+SELECT
+EXTRACT(HOUR FROM order_time) AS hour,
+COUNT(*) AS count_pizzas_ordered
+
+FROM customer_orders_clean
+
+GROUP BY 1
+ORDER BY 1 ASC;
+```
+| hour | count_pizzas_ordered |
+| ---- | -------------------- |
+| 11   | 1                    |
+| 13   | 3                    |
+| 18   | 3                    |
+| 19   | 1                    |
+| 21   | 3                    |
+| 23   | 3                    |
+
+---
 
 **10. What was the volume of orders for each day of the week?**
+```sql
+SELECT
+TO_CHAR(order_time,'Day') AS day,
+COUNT(*) AS count_pizzas_ordered
 
+FROM customer_orders_clean
+
+GROUP BY 1
+ORDER BY 1 ASC;
+```
+| day       | count_pizzas_ordered |
+| --------- | -------------------- |
+| Friday    | 1                    |
+| Saturday  | 5                    |
+| Thursday  | 3                    |
+| Wednesday | 5                    |
+
+---
 
 ### B. Runner and Customer Experience ###
 1. How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
