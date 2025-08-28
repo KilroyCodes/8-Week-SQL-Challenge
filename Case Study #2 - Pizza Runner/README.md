@@ -321,8 +321,59 @@ GROUP BY 1;
 ---
 
 **2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?**
+```sql
+SELECT
+roc.runner_id,
+DATE_TRUNC('minute', AVG(TO_TIMESTAMP(pickup_time, 'yyyy-mm-dd HH24:MI:SS') - order_time)) AS average_pickup_time
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE roc.cancellation = ''
+
+GROUP BY 1
+ORDER BY 1;
+```
+| runner_id | average_pickup_time |
+| --------- | ------------------- |
+| 1         | 00:15:00            |
+| 2         | 00:23:00            |
+| 3         | 00:10:00            |
+
+---
 
 **3. Is there any relationship between the number of pizzas and how long the order takes to prepare?**
+```sql
+SELECT
+coc.order_id,
+COUNT(coc.pizza_id),
+DATE_TRUNC('minute', AVG(TO_TIMESTAMP(pickup_time, 'yyyy-mm-dd HH24:MI:SS') - order_time)) AS average_pickup_time
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE roc.cancellation = ''
+
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+| order_id | count | average_pickup_time |
+| -------- | ----- | ------------------- |
+| 4        | 3     | 00:29:00            |
+| 3        | 2     | 00:21:00            |
+| 10       | 2     | 00:15:00            |
+| 7        | 1     | 00:10:00            |
+| 8        | 1     | 00:20:00            |
+| 5        | 1     | 00:10:00            |
+| 2        | 1     | 00:10:00            |
+| 1        | 1     | 00:10:00            |
+
+
+The higher the number of pizzas, the longer the order takes to prepare, with each pizza requiring around 10 minutes each.
+
+---
 
 **4. What was the average distance travelled for each customer?**
 
