@@ -370,7 +370,8 @@ ORDER BY 2 DESC;
 | 2        | 1     | 00:10:00            |
 | 1        | 1     | 00:10:00            |
 
-The higher the number of pizzas, the longer the order takes to prepare, with each pizza requiring around 10 minutes each.--
+<br/>
+The higher the number of pizzas, the longer the order takes to prepare, with each pizza requiring around 10 minutes each.
 
 ---
 
