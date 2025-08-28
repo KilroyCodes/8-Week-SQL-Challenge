@@ -456,9 +456,8 @@ ORDER BY 1 ASC;
 | 2         | 105         | 7        | 1           | 60.00               |
 | 3         | 104         | 5        | 1           | 40.00               |
 
----
-
 <br/>
+
 **Runner 1**
 * Mostly maintains around 40 km/h, save for customer 104. It is possible the route to customer 104 involves a highway with a higher speed limit
 
@@ -468,6 +467,8 @@ ORDER BY 1 ASC;
 
 **Runner 3**
 * Has completed only one delivery at 40 km/h
+
+---
 
 **7. What is the successful delivery percentage for each runner?**
 
