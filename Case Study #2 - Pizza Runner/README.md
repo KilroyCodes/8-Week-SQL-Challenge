@@ -370,9 +370,9 @@ ORDER BY 2 DESC;
 | 2        | 1     | 00:10:00            |
 | 1        | 1     | 00:10:00            |
 
-
+--
 The higher the number of pizzas, the longer the order takes to prepare, with each pizza requiring around 10 minutes each.
-
+--
 ---
 
 **4. What was the average distance travelled for each customer?**
