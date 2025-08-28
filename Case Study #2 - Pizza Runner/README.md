@@ -382,10 +382,92 @@ The higher the number of pizzas, the longer the order takes to prepare, with eac
 ---
 
 **4. What was the average distance travelled for each customer?**
+```sql
+SELECT
+coc.customer_id,
+ROUND(AVG(CAST(roc.distance AS FLOAT))) AS avg_distance_km
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE roc.cancellation = ''
+
+GROUP BY 1
+ORDER BY 1 ASC;
+```
+| customer_id | avg_distance_km |
+| ----------- | --------------- |
+| 101         | 20              |
+| 102         | 17              |
+| 103         | 23              |
+| 104         | 10              |
+| 105         | 25              |
+
+---
 
 **5. What was the difference between the longest and shortest delivery times for all orders?**
+```sql
+SELECT
+MAX(roc.duration) AS max_delivery_time_min,
+MIN(roc.duration) AS min_delivery_time_min,
+CAST(MAX(roc.duration) AS INT) - CAST(MIN(roc.duration) AS INT) AS max_min_duration_diff
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE roc.cancellation = '';
+```
+| max_delivery_time_min | min_delivery_time_min | max_min_duration_diff |
+| --------------------- | --------------------- | --------------------- |
+| 40                    | 10                    | 30                    |
+
+---
 
 **6. What was the average speed for each runner for each delivery and do you notice any trend for these values?**
+```sql
+SELECT
+roc.runner_id,
+coc.customer_id,
+roc.order_id,
+COUNT(coc.pizza_id) AS pizza_count,
+ROUND(CAST(
+  CAST(roc.distance AS FLOAT)/
+  (CAST(roc.duration AS FLOAT)/60) AS NUMERIC), 2) AS delivery_speed_kmph
+
+FROM customer_orders_clean AS coc
+LEFT JOIN runner_orders_clean AS roc ON
+coc.order_id = roc.order_id
+
+WHERE roc.cancellation = ''
+
+GROUP BY 1,2,3,5
+ORDER BY 1 ASC;
+```
+| runner_id | customer_id | order_id | pizza_count | delivery_speed_kmph |
+| --------- | ----------- | -------- | ----------- | ------------------- |
+| 1         | 101         | 1        | 1           | 37.50               |
+| 1         | 101         | 2        | 1           | 44.44               |
+| 1         | 102         | 3        | 2           | 40.20               |
+| 1         | 104         | 10       | 2           | 60.00               |
+| 2         | 102         | 8        | 1           | 93.60               |
+| 2         | 103         | 4        | 3           | 35.10               |
+| 2         | 105         | 7        | 1           | 60.00               |
+| 3         | 104         | 5        | 1           | 40.00               |
+
+---
+
+<br/>
+**Runner 1**
+* Mostly maintains around 40 km/h, save for customer 104. It is possible the route to customer 104 involves a highway with a higher speed limit
+
+**Runner 2**
+* Travelled over 90 km/h for customer 102 where Runner 1 travelled at 40 km/h. This significant difference should be investigated
+* Has the most variable speed among the runners
+
+**Runner 3**
+* Has completed only one delivery at 40 km/h
 
 **7. What is the successful delivery percentage for each runner?**
 
