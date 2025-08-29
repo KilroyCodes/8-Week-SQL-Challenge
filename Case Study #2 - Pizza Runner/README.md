@@ -491,7 +491,39 @@ ORDER BY 1;
 
 ### C. Ingredient Optimisation ###
 **1. What are the standard ingredients for each pizza?**
+```sql
+WITH toppings AS (
+SELECT
+pizza_id,
+CAST(UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
 
+FROM pizza_recipes)
+
+SELECT
+DISTINCT(t.toppings),
+pt.topping_name
+
+FROM toppings AS t
+  
+JOIN toppings AS t2 ON
+t.toppings = t2.toppings AND
+t.pizza_id <> t2.pizza_id
+
+JOIN pizza_toppings AS pt ON
+pt.topping_id = t.toppings
+
+WHERE t.toppings = t2.toppings;
+```
+<br/>
+
+The toppings both pizzas share in common are:
+
+| toppings | topping_name |
+| -------- | ------------ |
+| 6        | Mushrooms    |
+| 4        | Cheese       |
+
+---
 
 **2. What was the most commonly added extra?**
 
