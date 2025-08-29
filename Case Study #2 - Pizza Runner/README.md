@@ -526,6 +526,40 @@ The toppings both pizzas share in common are:
 ---
 
 **2. What was the most commonly added extra?**
+```sql
+WITH extras_count AS (
+SELECT
+CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS topping_id,
+COUNT(*) AS order_count
+  
+FROM customer_orders_clean AS coc
+
+WHERE coc.extras <> ''
+
+GROUP BY 1)
+
+SELECT
+ec.topping_id,
+pt.topping_name,
+ec.order_count
+
+FROM extras_count AS ec
+JOIN pizza_toppings AS pt ON
+pt.topping_id = ec.topping_id
+
+ORDER BY 3 DESC;
+```
+| topping_id | topping_name | order_count |
+| ---------- | ------------ | ----------- |
+| 1          | Bacon        | 4           |
+| 4          | Cheese       | 1           |
+| 5          | Chicken      | 1           |
+
+<br/>
+
+Bacon is the most commonly added extra
+
+---
 
 **3. What was the most common exclusion?**
 
