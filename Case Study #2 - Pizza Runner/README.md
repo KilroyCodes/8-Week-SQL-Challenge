@@ -496,7 +496,6 @@ WITH toppings AS (
 SELECT
 pizza_id,
 CAST(UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
-
 FROM pizza_recipes)
 
 SELECT
@@ -562,6 +561,38 @@ Bacon is the most commonly added extra
 ---
 
 **3. What was the most common exclusion?**
+```sql
+WITH exclusion_count AS (
+SELECT
+CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS topping_id,
+COUNT(*) AS order_count
+
+FROM customer_orders_clean AS coc
+
+WHERE coc.exclusions <> ''
+
+GROUP BY 1)
+
+SELECT
+ec.topping_id,
+pt.topping_name,
+ec.order_count
+
+FROM exclusion_count AS ec
+JOIN pizza_toppings AS pt ON
+pt.topping_id = ec.topping_id
+
+ORDER BY 3 DESC;
+```
+| topping_id | topping_name | order_count |
+| ---------- | ------------ | ----------- |
+| 4          | Cheese       | 4           |
+| 2          | BBQ Sauce    | 1           |
+| 6          | Mushrooms    | 1           |
+
+The most common exclusion is cheese.
+
+---
 
 **4. Generate an order item for each record in the customers_orders table in the format of one of the following:**
   * Meat Lovers
@@ -569,8 +600,89 @@ Bacon is the most commonly added extra
   * Meat Lovers - Extra Bacon
   * Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
 
+*(I'm unsure what this question is asking)*
+
 **5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients**
 *For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"*
+```sql
+WITH order_expanded AS (
+
+WITH toppings_expanded AS (
+  
+WITH toppings AS (
+SELECT
+pizza_id,
+CAST(
+UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
+FROM pizza_recipes)
+  
+SELECT
+coc.order_id,
+coc.pizza_id,
+COUNT(*) AS count_order,
+t.toppings,
+CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras,
+CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions
+
+FROM customer_orders_clean AS coc
+JOIN toppings AS t ON
+t.pizza_id = coc.pizza_id
+
+JOIN pizza_toppings AS pt ON
+pt.topping_id = t.toppings
+
+GROUP BY 1,2,4,5,6
+ORDER BY 1,2)
+
+SELECT
+te.order_id,
+te.pizza_id,
+pn.pizza_name,
+te.count_order,
+te.toppings,
+pt.topping_name,
+te.extras,
+te.exclusions,
+CASE 
+WHEN te.toppings = te.exclusions THEN 0
+WHEN te.toppings = te.extras THEN 2
+ELSE 1 END AS toppings_count
+
+FROM toppings_expanded AS te
+JOIN pizza_toppings AS pt ON
+pt.topping_id = te.toppings
+
+JOIN pizza_names AS pn ON
+pn.pizza_id = te.pizza_id
+
+GROUP BY 1,2,3,4,5,6,7,8)
+
+SELECT
+oe.order_id,
+oe.pizza_name,
+STRING_AGG(CAST(oe.toppings_count AS TEXT) || 'x ' || oe.topping_name, ', ') AS toppings_required,
+oe.count_order
+
+FROM order_expanded AS oe
+
+WHERE oe.toppings_count > 0
+
+GROUP BY 1,2,4
+ORDER BY 1 ASC;
+```
+| order_id | pizza_name | toppings_required                                                                                                                                                                 | count_order |
+| -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 4        | Meatlovers | 1x Bacon, 1x BBQ Sauce, 1x Beef, 1x Chicken, 1x Mushrooms, 1x Pepperoni, 1x Salami                                                                                                | 2           |
+| 4        | Vegetarian | 1x Mushrooms, 1x Onions, 1x Peppers, 1x Tomatoes, 1x Tomato Sauce                                                                                                                 | 1           |
+| 5        | Meatlovers | 2x Bacon, 1x BBQ Sauce, 1x Beef, 1x Cheese, 1x Chicken, 1x Mushrooms, 1x Pepperoni, 1x Salami                                                                                     | 1           |
+| 7        | Vegetarian | 1x Cheese, 1x Mushrooms, 1x Onions, 1x Peppers, 1x Tomatoes, 1x Tomato Sauce                                                                                                      | 1           |
+| 9        | Meatlovers | 2x Bacon, 1x Bacon, 1x BBQ Sauce, 1x BBQ Sauce, 1x Beef, 1x Beef, 1x Cheese, 1x Chicken, 2x Chicken, 1x Mushrooms, 1x Mushrooms, 1x Pepperoni, 1x Pepperoni, 1x Salami, 1x Salami | 1           |
+| 10       | Meatlovers | 2x Bacon, 1x Bacon, 1x BBQ Sauce, 1x Beef, 1x Beef, 1x Cheese, 2x Cheese, 1x Chicken, 1x Chicken, 1x Mushrooms, 1x Pepperoni, 1x Pepperoni, 1x Salami, 1x Salami                  | 1           |
+
+We can now see which toppings are required for each pizza order, taking into account extras (denoted as 2x) and exclusions (removed from toppings required list).
+A **count_order** column has also been added in to account for single order IDs with multiple of the same type of pizza order.
+
+---
 
 **6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?**
 
