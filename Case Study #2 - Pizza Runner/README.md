@@ -621,10 +621,14 @@ coc.order_id,
 coc.pizza_id,
 COUNT(*) AS count_order,
 t.toppings,
-CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras,
-CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions
+extras.extras,
+exclusions.exclusions
 
 FROM customer_orders_clean AS coc
+LEFT JOIN LATERAL (SELECT CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras) extras ON TRUE
+
+LEFT JOIN LATERAL (SELECT CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions) exclusions ON TRUE
+
 JOIN toppings AS t ON
 t.pizza_id = coc.pizza_id
 
@@ -679,12 +683,96 @@ ORDER BY 1 ASC;
 | 9        | Meatlovers | 2x Bacon, 1x Bacon, 1x BBQ Sauce, 1x BBQ Sauce, 1x Beef, 1x Beef, 1x Cheese, 1x Chicken, 2x Chicken, 1x Mushrooms, 1x Mushrooms, 1x Pepperoni, 1x Pepperoni, 1x Salami, 1x Salami | 1           |
 | 10       | Meatlovers | 2x Bacon, 1x Bacon, 1x BBQ Sauce, 1x Beef, 1x Beef, 1x Cheese, 2x Cheese, 1x Chicken, 1x Chicken, 1x Mushrooms, 1x Pepperoni, 1x Pepperoni, 1x Salami, 1x Salami                  | 1           |
 
-We can now see which toppings are required for each pizza order, taking into account extras (denoted as 2x) and exclusions (removed from toppings required list).
-A **count_order** column has also been added in to account for single order IDs with multiple of the same type of pizza order.
+We can now see which toppings are required for each pizza order, taking into account extras (denoted as 2x) and exclusions (removed from toppings required list). <br/>
+A **count_order** column has also been added in so that multiple of the same type of pizza ordered within one **order_id** are not missed.
 
 ---
 
 **6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?**
+```sql
+WITH order_expanded AS (
+
+WITH toppings_expanded AS (
+  
+WITH toppings AS (
+SELECT
+pizza_id,
+CAST(
+UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
+FROM pizza_recipes)
+  
+SELECT
+coc.order_id,
+coc.pizza_id,
+COUNT(*) AS count_order,
+t.toppings,
+CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras,
+CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions
+
+FROM customer_orders_clean AS coc
+JOIN toppings AS t ON
+t.pizza_id = coc.pizza_id
+
+JOIN pizza_toppings AS pt ON
+pt.topping_id = t.toppings
+
+GROUP BY 1,2,4,5,6
+ORDER BY 1,2)
+
+SELECT
+te.order_id,
+te.pizza_id,
+pn.pizza_name,
+te.count_order,
+te.toppings,
+pt.topping_name,
+te.extras,
+te.exclusions,
+CASE 
+WHEN te.toppings = te.exclusions THEN 0
+WHEN te.toppings = te.extras THEN 2
+ELSE 1 END AS toppings_count
+
+FROM toppings_expanded AS te
+JOIN pizza_toppings AS pt ON
+pt.topping_id = te.toppings
+
+JOIN pizza_names AS pn ON
+pn.pizza_id = te.pizza_id
+
+GROUP BY 1,2,3,4,5,6,7,8)
+
+SELECT
+oe.topping_name,
+SUM(oe.toppings_count) AS total_quantity
+
+FROM order_expanded AS oe
+JOIN runner_orders_clean AS roc ON
+roc.order_id = oe.order_id
+
+WHERE roc.cancellation = ''
+
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+| topping_name | total_quantity |
+| ------------ | -------------- |
+| Bacon        | 6              |
+| Cheese       | 5              |
+| Mushrooms    | 5              |
+| Pepperoni    | 4              |
+| Salami       | 4              |
+| Chicken      | 4              |
+| Beef         | 4              |
+| BBQ Sauce    | 3              |
+| Tomatoes     | 2              |
+| Onions       | 2              |
+| Peppers      | 2              |
+| Tomato Sauce | 2              |
+
+Bacon is the most used topping throughout all delivered pizza orders, and tomato sauce the
+
+---
 
 ### D. Pricing and Ratings ###
 **1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes - how much money has Pizza Runner made so far if there are no delivery fees?**
