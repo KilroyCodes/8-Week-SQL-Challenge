@@ -702,44 +702,32 @@ We can now see which toppings are required for each pizza order, taking into acc
 
 **6. What is the total quantity of each ingredient used in all delivered pizzas sorted by most frequent first?**
 ```sql
-WITH order_expanded AS (
-
 WITH toppings_expanded AS (
-  
-WITH toppings AS (
 SELECT
-pizza_id,
-CAST(
-UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
-FROM pizza_recipes)
-  
-SELECT
+coc.row_id,
 coc.order_id,
 coc.pizza_id,
-COUNT(*) AS count_order,
 t.toppings,
-CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras,
-CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions
+extras.extras,
+exclusions.exclusions
 
 FROM customer_orders_clean AS coc
+LEFT JOIN LATERAL (SELECT CAST(UNNEST(STRING_TO_ARRAY(coc.extras, ',')) AS INT) AS extras) extras ON TRUE
+
+LEFT JOIN LATERAL (SELECT CAST(UNNEST(STRING_TO_ARRAY(coc.exclusions, ',')) AS INT) AS exclusions) exclusions ON TRUE
+
 JOIN toppings AS t ON
 t.pizza_id = coc.pizza_id
 
 JOIN pizza_toppings AS pt ON
 pt.topping_id = t.toppings
 
-GROUP BY 1,2,4,5,6
-ORDER BY 1,2)
+GROUP BY 1,2,3,4,5,6
+ORDER BY 1,2),
 
+order_expanded AS (
 SELECT
-te.order_id,
-te.pizza_id,
-pn.pizza_name,
-te.count_order,
-te.toppings,
-pt.topping_name,
-te.extras,
-te.exclusions,
+DISTINCT *,
 CASE 
 WHEN te.toppings = te.exclusions THEN 0
 WHEN te.toppings = te.extras THEN 2
@@ -750,39 +738,54 @@ JOIN pizza_toppings AS pt ON
 pt.topping_id = te.toppings
 
 JOIN pizza_names AS pn ON
-pn.pizza_id = te.pizza_id
+pn.pizza_id = te.pizza_id),
 
-GROUP BY 1,2,3,4,5,6,7,8)
-
+order_toppings AS (
 SELECT
-oe.topping_name,
-SUM(oe.toppings_count) AS total_quantity
-
+oe.order_id,
+oe.row_id,
+oe.pizza_name,
+oe.topping_name, 
+MAX(oe.toppings_count) AS toppings_count
+         
 FROM order_expanded AS oe
-JOIN runner_orders_clean AS roc ON
+LEFT JOIN runner_orders_clean AS roc ON
 roc.order_id = oe.order_id
 
-WHERE roc.cancellation = ''
+WHERE 
+oe.toppings_count > 0 AND
+roc.cancellation = ''  
+
+GROUP BY 1,2,3, 4
+ORDER BY 4 ASC)
+
+SELECT
+topping_name,
+SUM(toppings_count) AS total_count
+
+FROM order_toppings
 
 GROUP BY 1
 ORDER BY 2 DESC;
 ```
-| topping_name | total_quantity |
-| ------------ | -------------- |
-| Bacon        | 6              |
-| Cheese       | 5              |
-| Mushrooms    | 5              |
-| Pepperoni    | 4              |
-| Salami       | 4              |
-| Chicken      | 4              |
-| Beef         | 4              |
-| BBQ Sauce    | 3              |
-| Tomatoes     | 2              |
-| Onions       | 2              |
-| Peppers      | 2              |
-| Tomato Sauce | 2              |
+*Note that we retain the new toppings temp table we created in the previous question* <br/>
 
-Bacon is the most used topping throughout all delivered pizza orders, and tomato sauce the
+| topping_name | total_count |
+| ------------ | ----------- |
+| Mushrooms    | 12          |
+| Bacon        | 11          |
+| Cheese       | 10          |
+| Chicken      | 9           |
+| Beef         | 9           |
+| Pepperoni    | 9           |
+| Salami       | 9           |
+| BBQ Sauce    | 9           |
+| Tomatoes     | 3           |
+| Onions       | 3           |
+| Peppers      | 3           |
+| Tomato Sauce | 3           |
+
+Mushroom is the most used topping throughout all **delivered** pizza orders (we've removed cancelled orders here), and tomato sauce is the least used (how odd!)
 
 ---
 
