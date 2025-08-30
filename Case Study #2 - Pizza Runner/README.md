@@ -785,7 +785,8 @@ ORDER BY 2 DESC;
 | Peppers      | 3           |
 | Tomato Sauce | 3           |
 
-Mushroom is the most used topping throughout all **delivered** pizza orders (we've removed cancelled orders here), and tomato sauce is the least used (how odd!)
+* Mushroom is the most used topping throughout all **delivered** pizza orders (we've removed cancelled orders here)
+* Tomatoes, Onions, Peppers, and Tomato sauce are the least used toppings
 
 ---
 
