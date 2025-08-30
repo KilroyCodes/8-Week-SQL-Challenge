@@ -606,6 +606,8 @@ The most common exclusion is cheese.
 
 **5. Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients**
 *For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"*
+<br/>
+We'll first create a new temp table to separate each default pizza's toppings into separate rows
 ```sql
 CREATE TEMP TABLE toppings AS (
 SELECT
@@ -613,7 +615,8 @@ pizza_id,
 CAST(
 UNNEST(STRING_TO_ARRAY(toppings,',')) AS INT) AS toppings
 FROM pizza_recipes);
-
+```
+```sql
 WITH toppings_expanded AS (
 SELECT
 coc.row_id,
@@ -669,17 +672,31 @@ ORDER BY 4 ASC)
 SELECT
 order_id,
 pizza_name,
-STRING_AGG(DISTINCT(topping), ', ' ORDER BY topping ASC) AS toppings,
-COUNT(DISTINCT row_id)
+STRING_AGG(DISTINCT(topping), ', ' ORDER BY topping ASC) AS toppings
 
 FROM order_toppings
 
-GROUP BY 1,2
+GROUP BY 1,2, row_id
 ORDER BY 1;
 ```
+| order_id | pizza_name | toppings                                                                                      |
+| -------- | ---------- | --------------------------------------------------------------------------------------------- |
+| 1        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 2        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 3        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 3        | Vegetarian | Cheese x1, Mushrooms x1, Onions x1, Peppers x1, Tomato Sauce x1, Tomatoes x1                  |
+| 4        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1            |
+| 4        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1            |
+| 4        | Vegetarian | Mushrooms x1, Onions x1, Peppers x1, Tomato Sauce x1, Tomatoes x1                             |
+| 5        | Meatlovers | BBQ Sauce x1, Bacon x2, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 6        | Vegetarian | Cheese x1, Mushrooms x1, Onions x1, Peppers x1, Tomato Sauce x1, Tomatoes x1                  |
+| 7        | Vegetarian | Cheese x1, Mushrooms x1, Onions x1, Peppers x1, Tomato Sauce x1, Tomatoes x1                  |
+| 8        | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 9        | Meatlovers | BBQ Sauce x1, Bacon x2, Beef x1, Chicken x2, Mushrooms x1, Pepperoni x1, Salami x1            |
+| 10       | Meatlovers | BBQ Sauce x1, Bacon x1, Beef x1, Cheese x1, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
+| 10       | Meatlovers | BBQ Sauce x1, Bacon x2, Beef x1, Cheese x2, Chicken x1, Mushrooms x1, Pepperoni x1, Salami x1 |
 
-We can now see which toppings are required for each pizza order, taking into account extras (denoted as 2x) and exclusions (removed from toppings required list). <br/>
-A **count_order** column has also been added in so that multiple of the same type of pizza ordered within one **order_id** are not missed.
+We can now see which toppings are required for each pizza order, taking into account extras (denoted as 2x) and exclusions (removed from toppings required list).
 
 ---
 
