@@ -6,11 +6,11 @@ Danny and his friends have started a new food video subscription service called 
 
 All customers are given access to a **7-day free trial initially**. After the trial, there are two available subscription tiers: **Basic and Pro**. Basic subscriptions are only available on a monthly basis, while Pro is available either monthly or annually (at a discounted rate). 
 
-After the trial period, a customer is automatically subscribed to the monthly Pro plan (the most expensive) unless they actively go into their account to cancel or choose a different plan.
+After the trial period, a customer is **automatically subscribed to the monthly Pro plan** (the most expensive) unless they actively go into their account to cancel or choose a different plan.
 
-Any plan downgrades (e.g., Pro annual to Basic monthly) must first finish the remainder of their current plan, while any upgrades (e.g., Basic monthly to Pro monthly) are immediately applied.
+Any plan **downgrades** (e.g., Pro annual to Basic monthly) must first finish the remainder of their current plan, while any **upgrades** (e.g., Basic monthly to Pro monthly) are immediately applied.
 
-When a customer cancels their plan, they must finish the remainder of their current plan, but they are now classified as a **'churn' plan** in the data with the churn start date referring to the day they decided to cancel.
+When a customer **cancels their plan**, they must finish the remainder of their current plan, but they are now classified as a **'churn' plan** in the data with the churn start date referring to the day they decided to cancel.
 
 ## Relational Datasets ##
 There are two datasets to work with: plans, and subscriptions.
@@ -193,7 +193,46 @@ FROM plan_evolution pe;
 
 ---  
 
-**6. What is the number and percentage of customer plans after their initial free trial?**
+**6. What is the number and percentage of customer plans after their initial free trial?**  
+```sql
+WITH plan_ranking AS (
+SELECT
+s.customer_id,
+s.plan_id,
+s.start_date,
+RANK() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS plan_rank
+
+FROM foodie_fi.subscriptions s
+
+GROUP BY 1,2,3
+ORDER BY 1)
+
+SELECT
+pr.plan_id,
+p.plan_name,
+COUNT(*) AS customer_count,
+ROUND(
+  100*COUNT(*)/SUM(COUNT(*)) OVER()
+  ,1) || '%' AS customer_share
+
+FROM plan_ranking AS pr
+
+LEFT JOIN foodie_fi.plans p ON
+p.plan_id = pr.plan_id
+
+WHERE pr.plan_rank = 2 --plan selected after trial which is rank 1
+
+GROUP BY 1,2
+ORDER BY 1;
+```  
+| plan_id | plan_name     | customer_count | customer_share |
+| ------- | ------------- | -------------- | -------------- |
+| 1       | basic monthly | 546            | 54.6%          |
+| 2       | pro monthly   | 325            | 32.5%          |
+| 3       | pro annual    | 37             | 3.7%           |
+| 4       | churn         | 92             | 9.2%           |
+  
+---  
 
 **7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
 
