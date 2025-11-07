@@ -4,13 +4,13 @@ Challenge link: [Foodie-Fi](https://8weeksqlchallenge.com/case-study-3/)
 ## Background ##
 Danny and his friends have started a new food video subscription service called Foodie-Fi, giving customers access to food vides from all over the world.
 
-All customers are given access to a 7-day free trial initially. After the trial, there are two available subscription tiers: Basic and Pro. Basic subscriptions are only available on a monthly basis, while Pro is available either monthly or annually (at a discounted rate). 
+All customers are given access to a **7-day free trial initially**. After the trial, there are two available subscription tiers: **Basic and Pro**. Basic subscriptions are only available on a monthly basis, while Pro is available either monthly or annually (at a discounted rate). 
 
 After the trial period, a customer is automatically subscribed to the monthly Pro plan (the most expensive) unless they actively go into their account to cancel or choose a different plan.
 
 Any plan downgrades (e.g., Pro annual to Basic monthly) must first finish the remainder of their current plan, while any upgrades (e.g., Basic monthly to Pro monthly) are immediately applied.
 
-When a customer cancels their plan, they must finish the remainder of their current plan, but they are now classified as a 'churn' plan in the data with the churn start date referring to the day they decided to cancel.
+When a customer cancels their plan, they must finish the remainder of their current plan, but they are now classified as a **'churn' plan** in the data with the churn start date referring to the day they decided to cancel.
 
 ## Relational Datasets ##
 There are two datasets to work with: plans, and subscriptions.
@@ -167,6 +167,31 @@ FROM foodie_fi.subscriptions s;
 ---  
 
 **5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
+```sql
+WITH plan_evolution AS (
+SELECT
+s.customer_id,
+STRING_AGG(s.plan_id::TEXT, ',' ORDER BY s.plan_id ASC) AS plans
+
+FROM foodie_fi.subscriptions s
+
+GROUP BY 1)
+
+SELECT
+SUM(CASE WHEN pe.plans = '0,4' THEN 1 ELSE 0 END) AS count_churned_posttrial,
+
+ROUND(
+  100.0*SUM(CASE WHEN pe.plans = '0,4' THEN 1 ELSE 0 END)/
+  COUNT(DISTINCT pe.customer_id)
+  ,0) || '%' AS share_churned_posttrial
+
+FROM plan_evolution pe;
+```  
+| count_churned_posttrial | share_churned_posttrial |
+| ----------------------- | ----------------------- |
+| 92                      | 9%                      |
+
+---  
 
 **6. What is the number and percentage of customer plans after their initial free trial?**
 
