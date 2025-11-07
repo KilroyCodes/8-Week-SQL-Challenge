@@ -10,7 +10,7 @@ After the trial period, a customer is automatically subscribed to the monthly Pr
 
 Any plan downgrades (e.g., Pro annual to Basic monthly) must first finish the remainder of their current plan, while any upgrades (e.g., Basic monthly to Pro monthly) are immediately applied.
 
-When a customer cancels their plan, they must finish the remainder of their current plan, but they are now classified as a 'churn' plan in the data.
+When a customer cancels their plan, they must finish the remainder of their current plan, but they are now classified as a 'churn' plan in the data with the churn start date referring to the day they decided to cancel.
 
 ## Relational Datasets ##
 There are two datasets to work with: plans, and subscriptions.
@@ -70,8 +70,14 @@ ORDER BY 1,2;
 ---
 
 **Customer journey summaries**
-**1** - After the free trial period, actively chose to continue into a monthly plan.
-**2** - After the free trial period, automatically converted to pro annual.
+**1** - After the free trial period, actively chose to continue into a Basic monthly plan.
+**2** - After the free trial period, actively chose to continue into a Pro annual plan.
+**11** - Only availed of free trial.
+**13** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro monthly after 3 months.
+**15** - After the free trial, assumed automatic conversion to Pro monthly plan. Cancelled during second month.
+**16** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro annual after 4 months.
+**18** - After the free trial, assumed automatic conversion to Pro monthly plan.
+**19** - After the free trial, assumed automatic conversion to Pro monthly plan. Upgraded to Pro annual after 2 months.
 
 ### B. Data Analysis Questions ###
 **1. How many customers has Foodie-Fi ever had?**
