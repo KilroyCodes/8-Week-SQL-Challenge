@@ -94,11 +94,77 @@ FROM foodie_fi.subscriptions s;
 
 ---  
 
-**2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value**
+**2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value**  
+```sql
+SELECT
+EXTRACT(YEAR FROM s.start_date) AS year,
+EXTRACT(MONTH FROM s.start_date) AS month,
+COUNT(DISTINCT s.customer_id) AS customer_count
 
-**3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name**
+FROM foodie_fi.subscriptions s
 
-**4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?**
+WHERE s.plan_id = 0 --trial plan id
+
+GROUP BY 1,2
+ORDER BY 1,2;
+```
+  
+| year | month | customer_count |
+| ---- | ----- | -------------- |
+| 2020 | 1     | 88             |
+| 2020 | 2     | 68             |
+| 2020 | 3     | 94             |
+| 2020 | 4     | 81             |
+| 2020 | 5     | 88             |
+| 2020 | 6     | 79             |
+| 2020 | 7     | 89             |
+| 2020 | 8     | 88             |
+| 2020 | 9     | 87             |
+| 2020 | 10    | 79             |
+| 2020 | 11    | 75             |
+| 2020 | 12    | 84             |
+
+---  
+
+**3. What plan start_date values occur after the year 2020 for our dataset? Show the breakdown by count of events for each plan_name**  
+```sql
+SELECT
+EXTRACT(YEAR FROM s.start_date) AS year,
+s.plan_id,
+COUNT(DISTINCT s.customer_id) AS customer_count
+
+FROM foodie_fi.subscriptions s
+
+WHERE EXTRACT(YEAR FROM s.start_date) > 2020
+
+GROUP BY 1,2
+ORDER BY 1,2;
+```  
+| year | plan_id | customer_count |
+| ---- | ------- | -------------- |
+| 2021 | 1       | 8              |
+| 2021 | 2       | 60             |
+| 2021 | 3       | 63             |
+| 2021 | 4       | 71             |
+  
+---  
+
+**4. What is the customer count and percentage of customers who have churned rounded to 1 decimal place?**  
+```sql
+SELECT
+SUM(CASE WHEN s.plan_id=4 THEN 1 ELSE 0 END) AS churn_count,
+
+ROUND(
+  100.0*SUM(CASE WHEN s.plan_id=4 THEN 1 ELSE 0 END)/COUNT(DISTINCT s.customer_id)
+  ,1) || '%' AS churn_share
+
+FROM foodie_fi.subscriptions s;
+```
+| churn_count | churn_share |
+| ----------- | ----------- |
+| 307         | 30.7%       |
+  
+---  
 
 **5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
 
