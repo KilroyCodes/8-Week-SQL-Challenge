@@ -82,7 +82,17 @@ ORDER BY 1,2;
 ---  
 
 ### B. Data Analysis Questions ###
-**1. How many customers has Foodie-Fi ever had?**
+**1. How many customers has Foodie-Fi ever had?**  
+```sql
+SELECT
+COUNT(DISTINCT s.customer_id)
+
+FROM foodie_fi.subscriptions s;
+```
+  
+1000 (including trial-only users)  
+
+---  
 
 **2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value**
 
