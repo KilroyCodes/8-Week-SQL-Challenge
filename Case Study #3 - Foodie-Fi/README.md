@@ -68,8 +68,6 @@ ORDER BY 1,2;
 | 19          | 2       | pro monthly   | 2020-06-29 |
 | 19          | 3       | pro annual    | 2020-08-29 |
 
----
-
 **Customer journey summaries**  
   
 **1** - After the free trial period, actively chose to continue into a Basic monthly plan.  
@@ -80,6 +78,8 @@ ORDER BY 1,2;
 **16** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro annual after 4 months.  
 **18** - After the free trial, assumed automatic conversion to Pro monthly plan.  
 **19** - After the free trial, assumed automatic conversion to Pro monthly plan. Upgraded to Pro annual after 2 months.  
+
+---  
 
 ### B. Data Analysis Questions ###
 **1. How many customers has Foodie-Fi ever had?**
