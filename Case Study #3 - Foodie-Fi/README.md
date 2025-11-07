@@ -7,7 +7,7 @@ lorem ipsum
 ## Relational Datasets ##
 There are two datasets to work with: plans, and subscriptions.
 
-![Foodie-Fi](https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/main/Case%20Study%20%231%20-%20Danny's%20Diner/Danny's%20Diner%20relational%20databases.png)
+![Foodie-Fi](https://github.com/KilroyCodes/8-Week-SQL-Challenge/blob/3acd6486ace8fe9a94d346346662befcd7ab58a7/Case%20Study%20%233%20-%20Foodie-Fi/Foodie-Fi%20relational%20datasets.png)
 
 ## Case Study Questions & Solutions ##
 Questions provided by Data with Danny. Solutions provided by me :grin:
@@ -17,7 +17,7 @@ Based off the 8 sample customers provided in the sample from the subscriptions t
 
 Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
 
-### B.Data Analysis Questions ###
+### B. Data Analysis Questions ###
 **1. How many customers has Foodie-Fi ever had?**
 
 **2. What is the monthly distribution of trial plan start_date values for our dataset - use the start of the month as the group by value**
@@ -28,9 +28,14 @@ Try to keep it as short as possible - you may also want to run some sort of join
 
 **5. How many customers have churned straight after their initial free trial - what percentage is this rounded to the nearest whole number?**
 
-**6. What is the number and percentage of customer plans after their initial free trial?
-What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?
-How many customers have upgraded to an annual plan in 2020?
-How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?
-Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)
-How many customers downgraded from a pro monthly to a basic monthly plan in 2020?
+**6. What is the number and percentage of customer plans after their initial free trial?**
+
+**7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
+
+**8. How many customers have upgraded to an annual plan in 2020?**
+
+**9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?**
+
+**10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)**
+
+**11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?**
