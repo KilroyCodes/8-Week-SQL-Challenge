@@ -21,7 +21,7 @@ There are two datasets to work with: plans, and subscriptions.
 Questions provided by Data with Danny. Solutions provided by me :grin:
 
 ### A. Customer Journey ###
-Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey. \n
+Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey.  
 *Note: The sample customers are customer ids 1, 2, 11, 13, 15, 16, 18, and 19*
 
 Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
