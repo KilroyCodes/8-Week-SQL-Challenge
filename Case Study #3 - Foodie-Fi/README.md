@@ -22,6 +22,7 @@ Questions provided by Data with Danny. Solutions provided by me :grin:
 
 ### A. Customer Journey ###
 Based off the 8 sample customers provided in the sample from the subscriptions table, write a brief description about each customer’s onboarding journey.  
+  
 *Note: The sample customers are customer ids 1, 2, 11, 13, 15, 16, 18, and 19*
 
 Try to keep it as short as possible - you may also want to run some sort of join to make your explanations a bit easier!
@@ -69,15 +70,16 @@ ORDER BY 1,2;
 
 ---
 
-**Customer journey summaries**
-**1** - After the free trial period, actively chose to continue into a Basic monthly plan.
-**2** - After the free trial period, actively chose to continue into a Pro annual plan.
-**11** - Only availed of free trial.
-**13** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro monthly after 3 months.
-**15** - After the free trial, assumed automatic conversion to Pro monthly plan. Cancelled during second month.
-**16** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro annual after 4 months.
-**18** - After the free trial, assumed automatic conversion to Pro monthly plan.
-**19** - After the free trial, assumed automatic conversion to Pro monthly plan. Upgraded to Pro annual after 2 months.
+**Customer journey summaries**  
+  
+**1** - After the free trial period, actively chose to continue into a Basic monthly plan.  
+**2** - After the free trial period, actively chose to continue into a Pro annual plan.  
+**11** - Only availed of free trial.  
+**13** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro monthly after 3 months.  
+**15** - After the free trial, assumed automatic conversion to Pro monthly plan. Cancelled during second month.  
+**16** - After the free trial period, actively chose to continue into a Basic monthly plan. Upgraded to Pro annual after 4 months.  
+**18** - After the free trial, assumed automatic conversion to Pro monthly plan.  
+**19** - After the free trial, assumed automatic conversion to Pro monthly plan. Upgraded to Pro annual after 2 months.  
 
 ### B. Data Analysis Questions ###
 **1. How many customers has Foodie-Fi ever had?**
