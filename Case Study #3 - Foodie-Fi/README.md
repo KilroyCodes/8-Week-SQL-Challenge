@@ -392,3 +392,36 @@ ORDER BY ub.width_bucket;
 ---  
   
 **11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?**  
+```sql
+WITH plan_ranking AS (
+SELECT
+s.customer_id,
+s.plan_id,
+s.start_date,
+LEAD(s.plan_id, 1) OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS next_plan
+
+FROM foodie_fi.subscriptions s
+
+WHERE 
+EXTRACT(YEAR FROM s.start_date) = 2020
+
+GROUP BY 1,2,3
+ORDER BY 1)
+
+SELECT
+COUNT(DISTINCT pr.customer_id)
+
+FROM plan_ranking pr
+
+WHERE 
+pr.plan_id = 2 AND
+pr.next_plan = 1;
+```
+
+| count |
+| ----- |
+| 0     |
+  
+---  
+
+Thank you!
