@@ -234,7 +234,7 @@ ORDER BY 1;
   
 ---  
 
-**7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
+**7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**  
 ```sql
 WITH plan_ranking AS (
 SELECT
@@ -279,9 +279,58 @@ ORDER BY 1;
   
 ---  
 
-**8. How many customers have upgraded to an annual plan in 2020?**
+**8. How many customers have upgraded to an annual plan in 2020?**  
+```sql
+SELECT
+COUNT(DISTINCT s.customer_id)
 
-**9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?**
+FROM foodie_fi.subscriptions s
+
+WHERE s.plan_id = 3 AND --pro annual
+EXTRACT(YEAR FROM s.start_date) = 2020;
+```
+  
+| count |
+| ----- |
+| 195   |
+
+---  
+
+**9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?**  
+```sql
+WITH annual_upgrade AS (
+SELECT
+s.customer_id,
+CASE WHEN s.plan_id=3 THEN s.start_date END AS upgrade_date,
+CASE WHEN s.plan_id=0 THEN s.start_date END AS join_date
+
+FROM foodie_fi.subscriptions s
+
+GROUP BY 1,2,3
+ORDER BY 1),
+
+upgraded_customers AS (
+SELECT
+au.customer_id,
+MAX(au.upgrade_date) - MAX(au.join_date) AS upgrade_days
+
+FROM annual_upgrade au
+
+GROUP BY 1
+
+HAVING MAX(au.upgrade_date) IS NOT NULL)
+
+SELECT
+ROUND(AVG(uc.upgrade_days),0) AS avg_days_to_annual_upgrade
+
+FROM upgraded_customers uc;
+```
+
+| avg_days_to_annual_upgrade |
+| -------------------------- |
+| 105                        |
+  
+---  
 
 **10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)**
 
