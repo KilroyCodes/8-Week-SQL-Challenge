@@ -296,7 +296,7 @@ EXTRACT(YEAR FROM s.start_date) = 2020;
 
 ---  
 
-**9. How many days on average does it take for a customer to an annual plan from the day they join Foodie-Fi?**  
+**9. How many days on average does it take for a customer to upgrade to an annual plan from the day they join Foodie-Fi?**  
 ```sql
 WITH annual_upgrade AS (
 SELECT
@@ -332,6 +332,63 @@ FROM upgraded_customers uc;
   
 ---  
 
-**10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)**
+**10. Can you further breakdown this average value into 30 day periods (i.e. 0-30 days, 31-60 days etc)**  
+```sql
+WITH annual_upgrade AS (
+SELECT
+s.customer_id,
+CASE WHEN s.plan_id=3 THEN s.start_date END AS upgrade_date,
+CASE WHEN s.plan_id=0 THEN s.start_date END AS join_date
 
-**11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?**
+FROM foodie_fi.subscriptions s
+
+GROUP BY 1,2,3
+ORDER BY 1),
+
+upgraded_customers AS (
+SELECT
+au.customer_id,
+MAX(au.upgrade_date) - MAX(au.join_date) AS upgrade_days
+
+FROM annual_upgrade au
+  
+GROUP BY 1
+HAVING MAX(au.upgrade_date) IS NOT NULL),
+
+upgrade_buckets AS (
+SELECT
+WIDTH_BUCKET(uc.upgrade_days, 0, 365, 12),
+uc.customer_id
+
+FROM upgraded_customers uc
+
+GROUP BY 1,2)
+
+SELECT
+((ub.width_bucket-1)*30 || ' - ' || (ub.width_bucket*30) || ' days') AS days_elapsed_from_join,
+COUNT(DISTINCT ub.customer_id) AS customer_count
+
+FROM upgrade_buckets ub
+
+GROUP BY ub.width_bucket
+ORDER BY ub.width_bucket;
+```
+  
+| days_elapsed_from_join | customer_count |
+| ---------------------- | -------------- |
+| 0 - 30 days            | 49             |
+| 30 - 60 days           | 24             |
+| 60 - 90 days           | 35             |
+| 90 - 120 days          | 35             |
+| 120 - 150 days         | 43             |
+| 150 - 180 days         | 37             |
+| 180 - 210 days         | 24             |
+| 210 - 240 days         | 4              |
+| 240 - 270 days         | 4              |
+| 270 - 300 days         | 1              |
+| 300 - 330 days         | 1              |
+| 330 - 360 days         | 1              |
+
+---  
+  
+**11. How many customers downgraded from a pro monthly to a basic monthly plan in 2020?**  
