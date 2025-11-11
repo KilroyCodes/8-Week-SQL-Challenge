@@ -235,6 +235,49 @@ ORDER BY 1;
 ---  
 
 **7. What is the customer count and percentage breakdown of all 5 plan_name values at 2020-12-31?**
+```sql
+WITH plan_ranking AS (
+SELECT
+s.customer_id,
+s.plan_id,
+s.start_date,
+RANK() OVER (PARTITION BY s.customer_id ORDER BY s.start_date) AS plan_rank
+
+FROM foodie_fi.subscriptions s
+  
+WHERE s.start_date <= '2020-12-31'
+
+GROUP BY 1,2,3
+ORDER BY 1)
+
+SELECT
+pr.plan_id,
+p.plan_name,
+COUNT(*) AS customer_count,
+ROUND(
+  100*COUNT(*)/SUM(COUNT(*)) OVER()
+  ,1) || '%' AS customer_share
+
+FROM plan_ranking pr
+
+LEFT JOIN foodie_fi.plans p ON
+p.plan_id = pr.plan_id
+
+WHERE (pr.customer_id, pr.plan_rank) IN (SELECT pr.customer_id, MAX(pr.plan_rank) FROM plan_ranking pr GROUP BY 1)
+
+GROUP BY 1,2
+ORDER BY 1;
+```
+  
+| plan_id | plan_name     | customer_count | customer_share |
+| ------- | ------------- | -------------- | -------------- |
+| 0       | trial         | 19             | 1.9%           |
+| 1       | basic monthly | 224            | 22.4%          |
+| 2       | pro monthly   | 326            | 32.6%          |
+| 3       | pro annual    | 195            | 19.5%          |
+| 4       | churn         | 236            | 23.6%          |
+  
+---  
 
 **8. How many customers have upgraded to an annual plan in 2020?**
 
